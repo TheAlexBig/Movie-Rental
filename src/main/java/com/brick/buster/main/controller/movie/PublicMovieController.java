@@ -38,7 +38,7 @@ public class PublicMovieController {
 
     @JsonView(Views.PublicMovies.class)
     @GetMapping(value = "/search")
-    public List<Movie> getByAnime(@RequestParam(value = "name" ,defaultValue = "") String name){
+    public List<Movie> getByName(@RequestParam(value = "name" ,defaultValue = "") String name){
         return movieServiceImp.findAllByTitleContainingAndAvailable(name, true);
     }
 }

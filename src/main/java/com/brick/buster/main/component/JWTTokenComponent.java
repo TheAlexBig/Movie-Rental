@@ -1,7 +1,8 @@
 package com.brick.buster.main.component;
 
+import com.brick.buster.main.domain.auth.TokenBlock;
 import com.brick.buster.main.domain.auth.User;
-import com.brick.buster.main.service.auth.RoleServiceImp;
+import com.brick.buster.main.repository.auth.TokenRepository;
 import com.brick.buster.main.service.auth.UserServiceImp;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,9 +20,12 @@ import java.util.function.Function;
 public class JWTTokenComponent implements Serializable {
     private final UserServiceImp userServiceImp;
 
+    private final TokenRepository tokenRepository;
+
     @Autowired
-    public JWTTokenComponent(UserServiceImp userServiceImp) {
+    public JWTTokenComponent(UserServiceImp userServiceImp, TokenRepository tokenRepository) {
         this.userServiceImp = userServiceImp;
+        this.tokenRepository = tokenRepository;
     }
 
     @Value(value = "${jwt.token.header}")
@@ -38,6 +42,10 @@ public class JWTTokenComponent implements Serializable {
 
     public String getIdentifierFromToken(String token){
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public String getTokenFromHttp(HttpServletRequest request){
+        return request.getHeader(HEADER).replace(PREFIX+" ", "");
     }
 
     public Date getExpirationDateFromHttp(HttpServletRequest request) {
@@ -89,5 +97,13 @@ public class JWTTokenComponent implements Serializable {
                 .setExpiration(dt)
                 .signWith(SignatureAlgorithm.HS512, SECRET.getBytes()).compact();
         return PREFIX+" "+token;
+    }
+    public void blockToken(String token){
+        tokenRepository.save(new TokenBlock(token));
+    }
+
+    public void blockToken(HttpServletRequest request){
+        String token = getTokenFromHttp(request);
+        tokenRepository.save(new TokenBlock(token));
     }
 }

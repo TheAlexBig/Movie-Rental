@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -64,6 +65,12 @@ public class AuthController {
         String token =  jwtTokenComponent.generateToken(userForm.getUsername());
         userServiceImp.save(userForm, token);
         return new ResponseEntity<>(new RequestResponse("User created"), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/logout")
+    public ResponseEntity<Response> logoutProcess(HttpServletRequest request){
+        jwtTokenComponent.blockToken(request);
+        return new ResponseEntity<>(new RequestResponse("Your token has been block"), HttpStatus.OK);
     }
 
 }

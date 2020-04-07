@@ -1,6 +1,9 @@
 package com.brick.buster.main.util;
 
+import com.brick.buster.main.domain.auth.TokenBlock;
+import com.brick.buster.main.repository.auth.TokenRepository;
 import io.jsonwebtoken.*;
+import jdk.nashorn.internal.parser.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -26,11 +29,13 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     private String HEADER;
     private String SECRET;
     private String PREFIX;
+    private TokenRepository tokenRepository;
 
-    public JWTAuthorizationFilter(String HEADER, String SECRET, String PREFIX) {
+    public JWTAuthorizationFilter(String HEADER, String SECRET, String PREFIX, TokenRepository tokenRepository) {
         this.HEADER = HEADER;
         this.SECRET = SECRET;
         this.PREFIX = PREFIX;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -43,8 +48,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         else{
             try {
                 if (existingJWTToken(httpServletRequest, httpServletResponse)) {
+                    String token = httpServletRequest.getHeader(HEADER).replace(PREFIX+" ", "");
+                    Optional<TokenBlock>  tokenBlock= tokenRepository.findByBlocked(token);
                     Claims claims = validateToken(httpServletRequest);
-                    if (claims.get("authorities") != null) {
+                    if (claims.get("authorities") != null && !tokenBlock.isPresent()) {
                         setUpSpringAuthentication(claims);
                     } else {
                         SecurityContextHolder.clearContext();

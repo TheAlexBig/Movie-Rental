@@ -89,7 +89,7 @@ public class Movie implements Serializable {
     }
 
     public void likeMovie(){
-        this.likes+=1;
+        this.likes= this.likes+1;
     }
 
     public void reduceStock(int amount){

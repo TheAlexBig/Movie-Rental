@@ -26,7 +26,7 @@ import java.text.ParseException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1/commun/movies")
+@RequestMapping("api/v1/common/movies")
 public class LoggedMovieController {
     private final RentServiceImp rentServiceImp;
     private final UserServiceImp userServiceImp;
@@ -65,7 +65,7 @@ public class LoggedMovieController {
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PutMapping("return/{code}")
+    @PutMapping("/return/{code}")
     public ResponseEntity<Response> returnMovie(@PathVariable Integer code) throws ParseException {
         Optional<Rent> rent = rentServiceImp.findById(code);
         if(rent.isPresent() && !rent.get().getReturned()){

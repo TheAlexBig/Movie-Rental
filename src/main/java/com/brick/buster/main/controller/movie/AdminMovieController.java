@@ -100,7 +100,7 @@ public class AdminMovieController {
         return movieServiceImp.findAllByAvailableAdmin(pageable, page, elements, sort, availability);
     }
     @GetMapping(value = "/search")
-    public List<Movie> getByAnime(@RequestParam(value = "name" ,defaultValue = "") String name){
+    public List<Movie> getByName(@RequestParam(value = "name" ,defaultValue = "") String name){
         return movieServiceImp.findAllByTitleContaining(name);
     }
 

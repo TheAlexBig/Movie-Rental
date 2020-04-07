@@ -1,5 +1,6 @@
 package com.brick.buster.main;
 
+import com.brick.buster.main.repository.auth.TokenRepository;
 import com.brick.buster.main.service.auth.UserDetailsServiceImp;
 import com.brick.buster.main.util.JWTAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value(value = "${jwt.token.prefix}")
     private String PREFIX;
 
+    private final TokenRepository tokenRepository;
     private final UserDetailsServiceImp userDetailsServiceImp;
 
     @Autowired
-    public WebSecurityConfig(UserDetailsServiceImp userDetailsServiceImp) {
+    public WebSecurityConfig(UserDetailsServiceImp userDetailsServiceImp, TokenRepository tokenRepository) {
         this.userDetailsServiceImp = userDetailsServiceImp;
+        this.tokenRepository = tokenRepository;
     }
 
     @Bean
@@ -56,11 +59,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors()
                 .and()
-                .addFilterBefore(new JWTAuthorizationFilter(HEADER, SECRET, PREFIX),
+                .addFilterBefore(new JWTAuthorizationFilter(HEADER, SECRET, PREFIX, tokenRepository),
                         UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/api/v1/auth/**", "/api/v1/public/**").permitAll()
-                .antMatchers("/api/v1/commun/**").hasAuthority("READ_PRIVILEGE")
+                .antMatchers("/api/v1/common/**").hasAuthority("READ_PRIVILEGE")
                 .antMatchers("/api/v1/admin/**").hasAnyAuthority("WRITE_PRIVILEGE")
                 .anyRequest().authenticated()
                 .and()

@@ -104,6 +104,8 @@ public class LoggedMovieController {
         Optional<User> user = userServiceImp.findByUsernameOrEmail(identifier);
         if(movie.isPresent() && user.isPresent()){
             movieServiceImp.likeMovie(movie.get(), user.get());
+            return new ResponseEntity<>(new RequestResponse("Movie liked"),
+                    HttpStatus.OK);
         }
         return new ResponseEntity<>(new RequestResponse("Error while trying to like movie"),
                 HttpStatus.INTERNAL_SERVER_ERROR);

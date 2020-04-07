@@ -67,6 +67,7 @@ public class MovieServiceImp implements MovieService {
         if(!optionalLike.isPresent()){
             likeServiceImp.save(new Like("movie", movie.getCode()+"", user));
             movie.likeMovie();
+            movieRepository.save(movie);
         }
         return movie;
     }

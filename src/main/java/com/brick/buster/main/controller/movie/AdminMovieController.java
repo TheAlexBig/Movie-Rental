@@ -4,6 +4,7 @@ package com.brick.buster.main.controller.movie;
 import com.brick.buster.main.domain.business.Movie;
 import com.brick.buster.main.domain.business.MovieLog;
 import com.brick.buster.main.form.MovieForm;
+import com.brick.buster.main.form.MovieFormNoMulti;
 import com.brick.buster.main.response.ObjectResponse;
 import com.brick.buster.main.response.RequestResponse;
 import com.brick.buster.main.response.interfaces.Response;
@@ -45,7 +46,7 @@ public class AdminMovieController {
         this.errorValidator = errorValidator;
     }
 
-    @PostMapping
+    @PostMapping("/special")
     public ResponseEntity<Response> addMovie(@RequestPart MultipartFile image, @Valid @ModelAttribute MovieForm movieForm,
                                              BindingResult bindingResult){
         Optional<Response> errors = errorValidator.verifyBindingResult(bindingResult);
@@ -60,6 +61,18 @@ public class AdminMovieController {
         }
         return new ResponseEntity<>(new RequestResponse("Error while trying to create movie"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @PostMapping
+    public ResponseEntity<Response> addMovieNoMulti(@Valid @RequestBody MovieFormNoMulti movieFormNoMulti,
+                                             BindingResult bindingResult){
+        Optional<Response> errors = errorValidator.verifyBindingResult(bindingResult);
+        if(errors.isPresent()){
+            return new ResponseEntity<>(errors.get(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        Movie movie = movieServiceImp.save(movieFormNoMulti);
+        return new ResponseEntity<>(new ObjectResponse(movie, "Movie created"), HttpStatus.CREATED);
+    }
+
     @PutMapping(value = "/{code}")
     public ResponseEntity<Response> updateMovie(@PathVariable Integer code, HttpServletRequest request) throws IOException {
         Optional<Movie> movie = movieServiceImp.findOne(code);

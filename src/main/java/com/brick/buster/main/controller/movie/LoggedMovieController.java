@@ -6,23 +6,19 @@ import com.brick.buster.main.domain.business.Movie;
 import com.brick.buster.main.domain.business.Purchase;
 import com.brick.buster.main.domain.business.Rent;
 import com.brick.buster.main.form.AmountForm;
-import com.brick.buster.main.form.MovieForm;
 import com.brick.buster.main.response.ObjectResponse;
 import com.brick.buster.main.response.RequestResponse;
 import com.brick.buster.main.response.interfaces.Response;
 import com.brick.buster.main.service.auth.UserServiceImp;
-import com.brick.buster.main.service.business.MovieLogServiceImp;
 import com.brick.buster.main.service.business.MovieServiceImp;
 import com.brick.buster.main.service.business.PurchaseServiceImp;
 import com.brick.buster.main.service.business.RentServiceImp;
 import com.brick.buster.main.util.ErrorValidator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -36,16 +32,17 @@ public class LoggedMovieController {
     private final UserServiceImp userServiceImp;
     private final JWTTokenComponent jwtTokenComponent;
     private final PurchaseServiceImp purchaseServiceImp;
-
     private final ErrorValidator errorValidator;
+    private final MovieServiceImp movieServiceImp;
 
     @Autowired
-    public LoggedMovieController(UserServiceImp userServiceImp, JWTTokenComponent jwtTokenComponent, RentServiceImp rentServiceImp, PurchaseServiceImp purchaseServiceImp, ErrorValidator errorValidator) {
+    public LoggedMovieController(UserServiceImp userServiceImp, JWTTokenComponent jwtTokenComponent, RentServiceImp rentServiceImp, PurchaseServiceImp purchaseServiceImp, ErrorValidator errorValidator, MovieServiceImp movieServiceImp) {
         this.userServiceImp = userServiceImp;
         this.jwtTokenComponent = jwtTokenComponent;
         this.rentServiceImp = rentServiceImp;
         this.purchaseServiceImp = purchaseServiceImp;
         this.errorValidator = errorValidator;
+        this.movieServiceImp = movieServiceImp;
     }
 
     @PostMapping("/{code}/rent")
@@ -97,6 +94,18 @@ public class LoggedMovieController {
             }
         }
         return new ResponseEntity<>(new RequestResponse("Error while trying to buy a movie"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/{code}/like")
+    public ResponseEntity<Response> likeMovie(@PathVariable Integer code, HttpServletRequest request){
+        Optional<Movie> movie = movieServiceImp.findOne(code);
+        String identifier = jwtTokenComponent.getIndentifierFromHttp(request);
+        Optional<User> user = userServiceImp.findByUsernameOrEmail(identifier);
+        if(movie.isPresent() && user.isPresent()){
+            movieServiceImp.likeMovie(movie.get(), user.get());
+        }
+        return new ResponseEntity<>(new RequestResponse("Error while trying to like movie"),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

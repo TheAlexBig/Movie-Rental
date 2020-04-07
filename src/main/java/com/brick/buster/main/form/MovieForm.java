@@ -64,4 +64,8 @@ public class MovieForm {
     public void setSalePrice(BigDecimal salePrice) {
         this.salePrice = salePrice;
     }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
 }

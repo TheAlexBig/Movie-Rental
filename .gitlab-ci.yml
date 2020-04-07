@@ -1,4 +1,4 @@
-image: java:8
+image: maven:3.6.1-jdk-8
 
 stages:
   - build
@@ -17,6 +17,8 @@ build:
 production:
   stage: deploy
   script:
+  - apt-get update -yq
+  - apt-get install rubygems ruby-dev -y
   - gem install dpl
   - dpl --provider=heroku --app=$HEROKU_APP --api-key=$HEROKU_API_KEY
   only:

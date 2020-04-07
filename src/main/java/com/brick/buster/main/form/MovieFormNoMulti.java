@@ -1,14 +1,13 @@
 package com.brick.buster.main.form;
 
 import org.hibernate.validator.constraints.Range;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public class MovieForm {
+public class MovieFormNoMulti {
     @NotEmpty
     private String title = "no-title";
 
@@ -24,6 +23,9 @@ public class MovieForm {
 
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal salePrice;
+
+    @NotEmpty
+    private String url = "none";
 
     public String getTitle() {
         return title;
@@ -67,5 +69,13 @@ public class MovieForm {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

@@ -1,9 +1,12 @@
 package com.brick.buster.main.service.business;
 
+import com.brick.buster.main.domain.auth.Like;
 import com.brick.buster.main.domain.auth.User;
 import com.brick.buster.main.domain.business.Movie;
 import com.brick.buster.main.form.MovieForm;
+import com.brick.buster.main.form.MovieFormNoMulti;
 import com.brick.buster.main.repository.business.MovieRepository;
+import com.brick.buster.main.service.auth.LikeServiceImp;
 import com.brick.buster.main.service.business.interfaces.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +28,11 @@ import java.util.Optional;
 public class MovieServiceImp implements MovieService {
 
     private final MovieRepository movieRepository;
+    private final LikeServiceImp likeServiceImp;
 
-    public MovieServiceImp(MovieRepository movieRepository) {
+    public MovieServiceImp(MovieRepository movieRepository, LikeServiceImp likeServiceImp) {
         this.movieRepository = movieRepository;
+        this.likeServiceImp = likeServiceImp;
     }
 
     @Override
@@ -46,8 +51,24 @@ public class MovieServiceImp implements MovieService {
     }
 
     @Override
+    public Movie save(MovieFormNoMulti movieFormNoMulti) {
+        Movie newMovie = new Movie(movieFormNoMulti);
+        return movieRepository.save(newMovie);
+    }
+
+    @Override
     public Movie save(Movie movie) {
         return movieRepository.save(movie);
+    }
+
+    @Override
+    public Movie likeMovie(Movie movie, User user) {
+        Optional<Like> optionalLike= likeServiceImp.findByObjectAndReferenceAndUser("movie", movie.getCode()+"", user);
+        if(!optionalLike.isPresent()){
+            likeServiceImp.save(new Like("movie", movie.getCode()+"", user));
+            movie.likeMovie();
+        }
+        return movie;
     }
 
     @Override

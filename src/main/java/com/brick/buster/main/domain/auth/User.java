@@ -48,6 +48,10 @@ public class User implements Serializable {
     @OneToMany(mappedBy="user")
     private Set<Purchase> purchases = null;
 
+    @JsonManagedReference(value = "user-like")
+    @OneToMany(mappedBy="user")
+    private Set<Like> likes = null;
+
     public User() {
     }
 
@@ -151,5 +155,21 @@ public class User implements Serializable {
 
     public void setRented(Set<Rent> rented) {
         this.rented = rented;
+    }
+
+    public Set<Purchase> getPurchases() {
+        return purchases;
+    }
+
+    public void setPurchases(Set<Purchase> purchases) {
+        this.purchases = purchases;
+    }
+
+    public Set<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<Like> likes) {
+        this.likes = likes;
     }
 }

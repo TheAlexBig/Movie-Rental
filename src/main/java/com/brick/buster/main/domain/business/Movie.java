@@ -1,6 +1,7 @@
 package com.brick.buster.main.domain.business;
 
 import com.brick.buster.main.form.MovieForm;
+import com.brick.buster.main.form.MovieFormNoMulti;
 import com.brick.buster.main.util.Views;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -39,6 +40,9 @@ public class Movie implements Serializable {
     @JsonView(Views.PublicMovies.class)
     @Column(name = "movie_image")
     private String imageName = "none";
+    @JsonView(Views.PublicMovies.class)
+    @Column(name = "movie_likes")
+    private int likes = 0;
 
     @JsonManagedReference(value = "movie-logs")
     @OneToMany(mappedBy="movie")
@@ -73,6 +77,19 @@ public class Movie implements Serializable {
         this.rentalPrice = movieForm.getRentalPrice()   ;
         this.salePrice = movieForm.getSalePrice();
         this.imageName = imageName;
+    }
+
+    public Movie(MovieFormNoMulti movieFormNoMulti) {
+        this.title = movieFormNoMulti.getTitle();
+        this.description = movieFormNoMulti.getDescription();
+        this.stock = movieFormNoMulti.getStock();
+        this.rentalPrice = movieFormNoMulti.getRentalPrice()   ;
+        this.salePrice = movieFormNoMulti.getSalePrice();
+        this.imageName = movieFormNoMulti.getUrl();
+    }
+
+    public void likeMovie(){
+        this.likes+=1;
     }
 
     public void reduceStock(int amount){
@@ -160,5 +177,21 @@ public class Movie implements Serializable {
 
     public void setRented(Set<Rent> rented) {
         this.rented = rented;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public Set<Purchase> getPurchased() {
+        return purchased;
+    }
+
+    public void setPurchased(Set<Purchase> purchased) {
+        this.purchased = purchased;
     }
 }

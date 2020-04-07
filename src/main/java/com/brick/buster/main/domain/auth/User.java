@@ -38,19 +38,19 @@ public class User implements Serializable {
             name = "user_role",
             joinColumns =  @JoinColumn(name = "user_id", referencedColumnName = "user_code"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_code"))
-    private List<Role> roles = null;
+    private List<Role> roles;
 
     @JsonManagedReference(value = "my-rents")
     @OneToMany(mappedBy="user")
-    private Set<Rent> rented = null;
+    private Set<Rent> rented;
 
     @JsonManagedReference(value = "my-purchases")
     @OneToMany(mappedBy="user")
-    private Set<Purchase> purchases = null;
+    private Set<Purchase> purchases;
 
     @JsonManagedReference(value = "user-like")
     @OneToMany(mappedBy="user")
-    private Set<Like> likes = null;
+    private Set<Like> likes;
 
     public User() {
     }

@@ -18,9 +18,11 @@ public class MovieFormNoMulti {
     @NotNull
     private Integer stock = null;
 
+    @NotNull
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal rentalPrice ;
 
+    @NotNull
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal salePrice;
 

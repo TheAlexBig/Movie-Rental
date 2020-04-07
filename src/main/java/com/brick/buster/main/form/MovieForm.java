@@ -16,7 +16,8 @@ public class MovieForm {
     private String description = "no-description";
 
     @Range(min = 0)
-    private int stock = 0;
+    @NotNull
+    private Integer stock = null;
 
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal rentalPrice ;

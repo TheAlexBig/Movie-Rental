@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 public class AmountForm {
     @NotNull
-    int amount = 0;
+    private Integer amount = null;
 
     public int getAmount() {
         return amount;

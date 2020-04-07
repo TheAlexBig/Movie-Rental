@@ -9,6 +9,7 @@ import com.brick.buster.main.response.TokenResponse;
 import com.brick.buster.main.response.interfaces.Response;
 import com.brick.buster.main.service.auth.UserServiceImp;
 import com.brick.buster.main.service.auth.interfaces.UserService;
+import com.brick.buster.main.util.ErrorValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,18 +25,22 @@ import java.util.Optional;
 public class AuthController {
     @Value("{jwt.prefix}")
     private String PREFIX;
-
+    private final ErrorValidator errorValidator;
     private final UserServiceImp userServiceImp;
     private final JWTTokenComponent jwtTokenComponent;
 
-    public AuthController(UserServiceImp userServiceImp, JWTTokenComponent jwtTokenComponent) {
+    public AuthController(UserServiceImp userServiceImp, JWTTokenComponent jwtTokenComponent, ErrorValidator errorValidator) {
         this.userServiceImp = userServiceImp;
         this.jwtTokenComponent = jwtTokenComponent;
+        this.errorValidator = errorValidator;
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<Response> loginProcess(@Valid @RequestBody LoginForm loginForm , BindingResult bindingResult){
-
+        Optional<Response> errors = errorValidator.verifyBindingResult(bindingResult);
+        if(errors.isPresent()){
+            return new ResponseEntity<>(errors.get(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
         Optional<User> optionalUser = userServiceImp.validateUser(loginForm.getIdentifier(), loginForm.getPassword());
         if(optionalUser.isPresent()){
             String token =  jwtTokenComponent.generateToken(loginForm.getIdentifier());
@@ -46,6 +51,19 @@ public class AuthController {
         }
         return new ResponseEntity<>(new RequestResponse("Invalid credentials"), HttpStatus.UNAUTHORIZED);
     }
-
+    @PostMapping(value = "/register")
+    public ResponseEntity<Response> registerProcess(@Valid @RequestBody UserForm userForm , BindingResult bindingResult){
+        Optional<Response> errors = errorValidator.verifyBindingResult(bindingResult);
+        if(errors.isPresent()){
+            return new ResponseEntity<>(errors.get(), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        Optional<User> optionalUser = userServiceImp.findByUsernameOrEmail(userForm.getUsername(), userForm.getEmail());
+        if(optionalUser.isPresent()){
+            return new ResponseEntity<>(new RequestResponse("Email/username in use" ), HttpStatus.UNAUTHORIZED);
+        }
+        String token =  jwtTokenComponent.generateToken(userForm.getUsername());
+        userServiceImp.save(userForm, token);
+        return new ResponseEntity<>(new RequestResponse("User created"), HttpStatus.OK);
+    }
 
 }

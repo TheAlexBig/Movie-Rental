@@ -46,15 +46,15 @@ public class Movie implements Serializable {
 
     @JsonManagedReference(value = "movie-logs")
     @OneToMany(mappedBy="movie")
-    private Set<MovieLog> logs = null;
+    private Set<MovieLog> logs;
 
     @JsonManagedReference(value = "movies-rented")
     @OneToMany(mappedBy="movie")
-    private Set<Rent> rented = null;
+    private Set<Rent> rented;
 
     @JsonManagedReference(value = "movies-purchased")
     @OneToMany(mappedBy="movie")
-    private Set<Purchase> purchased = null;
+    private Set<Purchase> purchased;
 
     public Movie() {
     }

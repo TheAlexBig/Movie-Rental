@@ -15,7 +15,7 @@ public class ErrorValidator {
     public Optional<Response> verifyBindingResult(BindingResult bindingResult)   {
         if (bindingResult.hasErrors()) {
             List<String> problems  = bindingResult.getFieldErrors().stream().map(e ->
-                    "->" + e.getField().toUpperCase() + ":" + e.getDefaultMessage())
+                    "->" + e.getField() + " : " + e.getDefaultMessage())
                     .collect(Collectors.toList());
             return Optional.of(new ErrorResponse("Some fields contain errors", problems));
         }

@@ -1,6 +1,8 @@
 package com.brick.buster.main.domain.auth;
 
 
+import antlr.Token;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,6 +19,8 @@ public class TokenBlock {
     public TokenBlock(String blocked) {
         this.blocked = blocked;
     }
+
+    TokenBlock(){}
 
     public int getCode() {
         return code;

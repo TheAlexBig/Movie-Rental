@@ -31,8 +31,7 @@ public class PublicMovieController {
     public List<Movie> getAllAvailable
             (Pageable pageable, @RequestParam(value = "page", defaultValue = "0") Integer page,
              @RequestParam(value = "elements", defaultValue = "5") Integer elements,
-            @RequestParam(value = "sort", defaultValue = "title") String sort,
-             @RequestParam(value = "name" ,defaultValue = "") String name){
+            @RequestParam(value = "sort", defaultValue = "title") String sort){
         return movieServiceImp.findAllByAvailablePublic(pageable, page, elements, sort);
     }
 
